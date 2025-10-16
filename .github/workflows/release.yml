@@ -39,6 +39,12 @@ jobs:
             echo "model=linear" >> $GITHUB_OUTPUT
           fi
 
+      - name: Compute lowercase repo name
+        id: repo
+        run: |
+          REPO=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+          echo "repo=${REPO}" >> $GITHUB_OUTPUT
+
       - name: Train model for release
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
@@ -49,12 +55,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE="ghcr.io/${{ github.repository | toLowerCase() }}:${{ steps.version.outputs.version }}"
+          IMAGE="ghcr.io/${{ steps.repo.outputs.repo }}:${{ steps.version.outputs.version }}"
           docker build -t "$IMAGE" .
 
       - name: Smoke test container
         run: |
-          IMAGE="ghcr.io/${{ github.repository | toLowerCase() }}:${{ steps.version.outputs.version }}"
+          IMAGE="ghcr.io/${{ steps.repo.outputs.repo }}:${{ steps.version.outputs.version }}"
           docker run -d -p 8080:8080 --name test-container "$IMAGE"
           sleep 10
           curl -f http://localhost:8080/health
@@ -63,7 +69,7 @@ jobs:
 
       - name: Push Docker image
         run: |
-          IMAGE="ghcr.io/${{ github.repository | toLowerCase() }}:${{ steps.version.outputs.version }}"
+          IMAGE="ghcr.io/${{ steps.repo.outputs.repo }}:${{ steps.version.outputs.version }}"
           docker push "$IMAGE"
 
       - name: Create GitHub Release
@@ -74,4 +80,4 @@ jobs:
           body: |
             ✅ Model trained with ${{ steps.version.outputs.model }} regression.
             ✅ Docker image pushed to:
-            ghcr.io/${{ github.repository,, }}:${{ steps.version.outputs.version }}
+            ghcr.io/${{ steps.repo.outputs.repo }}:${{ steps.version.outputs.version }}
