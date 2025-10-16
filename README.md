@@ -1,72 +1,137 @@
-# Virtual Diabetes Clinic — ML Triage (v0.1 & v0.2)
+# 🩺 Virtual Diabetes Clinic — ML Progression Scoring API
 
-En liten ML-tjänst som förutspår kortsiktig progression i en diabetesklinik.
-API körs på **localhost:8080** (Docker Desktop). Byggd med FastAPI + scikit-learn.
-CI/CD via GitHub Actions med publicering till GHCR.
+This project provides a **machine learning service** that predicts short-term disease progression for diabetes patients.  
+It simulates a triage tool used by nurses to identify which patients may need follow-up based on their risk score.
 
-## Funktioner
-- `GET /health` → `{`"status":"ok","model_version":"vX.Y"`}`
-- `POST /predict` → `{`"prediction": <float>, "model_version": "vX.Y"`}`
-- Observability: JSON-fel vid ogiltig input (422/400)
-- Reproducerbar träning: fixed seeds, versions-pinning, metrics sparas.
+The API is built with **FastAPI** and packaged as a **Docker container**, ready to run locally on any system with **Docker Desktop**.
 
-## Snabbstart (lokalt)
+---
+
+## 🧰 Requirements
+Before running, make sure you have:
+- **Docker Desktop** installed and running  
+  - [Download for Windows/Mac](https://www.docker.com/products/docker-desktop/)
+- A working **terminal** (Command Prompt, PowerShell, or Terminal on macOS)
+- Internet access to pull the public image from GitHub Container Registry (GHCR)
+
+---
+
+## ⚙️ Available Versions
+
+### 🧩 Version v0.1 — Baseline Model
+- **Model:** `StandardScaler + LinearRegression`
+- **Purpose:** Baseline prediction of disease progression  
+- **Features:** Returns continuous risk score only
+
+**Run commands:**
 ```bash
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+```
 
-# 1) Träna modellen (default v0.1 = LinearRegression)
-python src/train.py --version v0.1 --model linear
-
-# 2) Starta API lokalt (utan Docker)
-uvicorn src.predict_service:app --host 0.0.0.0 --port 8080
-
-# 3) Testa
+**Health check:**
+```bash
 curl http://localhost:8080/health
-curl -X POST http://localhost:8080/predict -H "Content-Type: application/json" -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
 
-## Docker (Docker Desktop, port 8080)
+**Make a prediction:**
 ```bash
-# Träna först så att model/model.pkl finns (välj version)
-python src/train.py --version v0.1 --model linear
-# eller v0.2 (Ridge):
-# python src/train.py --version v0.2 --model ridge
-
-# Bygg image
-docker build -t virtual-diabetes-clinic:v0.1 .
-
-# Kör
-docker run --rm -p 8080:8080 virtual-diabetes-clinic:v0.1
+curl -X POST http://localhost:8080/predict \
+     -H "Content-Type: application/json" \
+     -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
 
-## API-spec
-**Request:** (features från `load_diabetes()`)
+---
+
+### 🚀 Version v0.2 — Improved Model with Risk Calibration
+- **Model:** `StandardScaler + Ridge(alpha=1.0)`
+- **Improvement:** Adds *calibration of the score* — the API now returns a binary flag (`high_risk`)  
+  indicating whether the patient exceeds a defined risk threshold.
+- **Output:** Continuous prediction + `high_risk: true/false`
+
+**Run commands:**
+```bash
+docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+```
+
+**Health check:**
+```bash
+curl http://localhost:8080/health
+```
+
+**Make a prediction:**
+```bash
+curl -X POST http://localhost:8080/predict \
+     -H "Content-Type: application/json" \
+     -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+```
+
+---
+
+## 🧠 API Overview
+
+### **Endpoints**
+| Method | Endpoint | Description |
+|--------|-----------|--------------|
+| `GET` | `/health` | Returns API status and current model version |
+| `POST` | `/predict` | Accepts diabetes dataset features and returns a progression score (and risk flag in v0.2) |
+
+---
+
+## 🔍 Example JSON Input
 ```json
 {
-  "age": 0.02, "sex": -0.044, "bmi": 0.06, "bp": -0.03,
-  "s1": -0.02, "s2": 0.03, "s3": -0.02, "s4": 0.02, "s5": 0.02, "s6": -0.001
+  "age": 0.02,
+  "sex": -0.044,
+  "bmi": 0.06,
+  "bp": -0.03,
+  "s1": -0.02,
+  "s2": 0.03,
+  "s3": -0.02,
+  "s4": 0.02,
+  "s5": 0.02,
+  "s6": -0.001
 }
 ```
 
-**Response:**
-```json
-{"prediction": 123.45, "model_version": "v0.1"}
+---
+
+## 🧾 Notes
+- The containers automatically start a FastAPI server on **port 8080**.  
+  Make sure this port is available before running.
+- Both versions are published to **GitHub Container Registry (GHCR)**:
+  - `ghcr.io/kasimalsaid/diabetesclinictriage:v0.1`
+  - `ghcr.io/kasimalsaid/diabetesclinictriage:v0.2`
+- The models were trained using the open-source **scikit-learn Diabetes dataset** (`load_diabetes`).
+
+---
+
+## 🐳 Useful Docker Commands
+
+**View running containers:**
+```bash
+docker ps
 ```
 
-## GitHub Actions
-- `ci.yml`: lint, tests, snabbträning, artifacts (`model.pkl`, `metrics.json`)
-- `release.yml`: på tag `v*` → tränar, bygger & pushar image till GHCR, smoke-testar, skapar GitHub Release med metrics + CHANGELOG
+**Stop a running container:**
+```bash
+docker stop <container_id>
+```
 
-## Reproducerbarhet
-- Seed: 42
-- Både data split och modeller använder deterministiska inställningar.
-- `metrics.json` sparar RMSE och metadata.
+**View logs (for debugging):**
+```bash
+docker logs <container_id>
+```
 
-## Versions
-- **v0.1**: `StandardScaler` + `LinearRegression`
-- **v0.2**: `StandardScaler` + `Ridge(alpha=1.0)`
+**Remove old containers:**
+```bash
+docker container prune
+```
 
-## Licens
-MIT
+---
 
+## 👥 Authors
+Developed by **Kasim Al-Said - DANIEL HOLM - ISAK HJELM - ELSA STJERNBORG** 
+
+---
