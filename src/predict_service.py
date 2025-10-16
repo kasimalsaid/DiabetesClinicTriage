@@ -59,4 +59,3 @@ def predict(payload: PatientData):
         raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
