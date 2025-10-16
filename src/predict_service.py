@@ -42,18 +42,14 @@ def predict(payload: PatientData):
         Xs = scaler.transform(X)
         yhat = float(model.predict(Xs)[0])
 
-        result = {
-            "prediction": yhat,
-            "model_version": model_version
-        }
+        response = {"prediction": yhat, "model_version": model_version}
 
-        # 🔥 Apply calibration only for Ridge (v0.2)
+        # Add high-risk flag only for Ridge (v0.2)
         if model_version == "v0.2":
-            threshold = 150  # You can tune this value
-            result["high_risk"] = bool(yhat > threshold)
-            result["threshold"] = threshold
+            threshold = 150.0  # Justerbart tröskelvärde
+            response["high_risk"] = yhat > threshold
 
-        return result
+        return response
 
     except ValidationError as ve:
         raise HTTPException(status_code=422, detail=str(ve))
