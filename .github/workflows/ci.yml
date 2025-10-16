@@ -29,6 +29,13 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python src/train.py --version v0.1 --model linear
 
+      - name: Upload metrics artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: artifacts/metrics.json
+    
+
       - name: Run tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
