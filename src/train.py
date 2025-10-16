@@ -1,17 +1,19 @@
 import argparse
 import numpy as np
+from pathlib import Path
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
-
 from model_utils import save_model, save_metrics
 
 SEED = 42
+np.random.seed(SEED)
 
 
 def train(version: str, model_name: str):
+    Path("artifacts").mkdir(exist_ok=True)
     data = load_diabetes(as_frame=True)
     X, y = data.data, data.target
 
@@ -34,7 +36,7 @@ def train(version: str, model_name: str):
     preds = model.predict(X_test_scaled)
     rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
 
-    save_model({"model": model, "scaler": scaler}, version)
+    save_model({"model": model, "scaler": scaler, "version": version}, version)
     metrics = {
         "version": version,
         "model": model.__class__.__name__,

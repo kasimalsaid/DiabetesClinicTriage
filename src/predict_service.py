@@ -37,12 +37,13 @@ def predict(payload: PatientData):
     try:
         X = np.array([[
             payload.age, payload.sex, payload.bmi, payload.bp,
-            payload.s1, payload.s2, payload.s3, payload.s4, payload.s5, payload.s6
+            payload.s1, payload.s2, payload.s3, payload.s4,
+            payload.s5, payload.s6
         ]])
         Xs = scaler.transform(X)
         yhat = float(model.predict(Xs)[0])
         return {"prediction": yhat, "model_version": model_version}
     except ValidationError as ve:
-        raise HTTPException(status_code=422, detail=str(ve))
+        raise HTTPException(status_code=422, detail=ve.errors())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
