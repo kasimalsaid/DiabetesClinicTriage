@@ -43,7 +43,7 @@ def train(version: str, model_name: str):
     recall = float(recall_score(y_true_flag, y_pred_flag))
 
     # --- Save artifacts ---
-    save_model({"model": model, "scaler": scaler}, version)
+    save_model({"model": model, "scaler": scaler, "version": version}, version)
     metrics = {
         "version": version,
         "model": model.__class__.__name__,

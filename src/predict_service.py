@@ -34,28 +34,29 @@ def health():
 
 @app.post("/predict")
 def predict(payload: PatientData):
-    """
-    Predict short-term disease progression.
-    Includes a 'high_risk' flag if predicted score exceeds threshold (default = 140).
-    """
     try:
-        X = np.array([[payload.age, payload.sex, payload.bmi, payload.bp,
-                       payload.s1, payload.s2, payload.s3, payload.s4, payload.s5, payload.s6]])
+        X = np.array([[
+            payload.age, payload.sex, payload.bmi, payload.bp,
+            payload.s1, payload.s2, payload.s3, payload.s4, payload.s5, payload.s6
+        ]])
         Xs = scaler.transform(X)
         yhat = float(model.predict(Xs)[0])
 
-        # Define risk threshold (can be tuned)
-        threshold = 140.0
-        high_risk = yhat > threshold
-
-        return {
+        result = {
             "prediction": yhat,
-            "high_risk": high_risk,
-            "threshold": threshold,
             "model_version": model_version
         }
+
+        # 🔥 Apply calibration only for Ridge (v0.2)
+        if model_version == "v0.2":
+            threshold = 150  # You can tune this value
+            result["high_risk"] = bool(yhat > threshold)
+            result["threshold"] = threshold
+
+        return result
 
     except ValidationError as ve:
         raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
