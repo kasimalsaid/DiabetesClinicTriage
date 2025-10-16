@@ -1,0 +1,11 @@
+.git
+.github
+tests
+artifacts
+.pytest_cache
+README.md
+CHANGELOG.md
+.gitignore
+*.md
+*.zip
+.venv
