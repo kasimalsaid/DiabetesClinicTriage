@@ -1,19 +1,17 @@
 import argparse
 import numpy as np
-from pathlib import Path
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, precision_score, recall_score
+
 from model_utils import save_model, save_metrics
 
 SEED = 42
-np.random.seed(SEED)
 
 
 def train(version: str, model_name: str):
-    Path("artifacts").mkdir(exist_ok=True)
     data = load_diabetes(as_frame=True)
     X, y = data.data, data.target
 
@@ -36,17 +34,30 @@ def train(version: str, model_name: str):
     preds = model.predict(X_test_scaled)
     rmse = float(np.sqrt(mean_squared_error(y_test, preds)))
 
-    save_model({"model": model, "scaler": scaler, "version": version}, version)
+    # --- Optional Calibration: convert to binary risk flag ---
+    threshold = 140.0
+    y_pred_flag = preds > threshold
+    y_true_flag = y_test > threshold
+
+    precision = float(precision_score(y_true_flag, y_pred_flag))
+    recall = float(recall_score(y_true_flag, y_pred_flag))
+
+    # --- Save artifacts ---
+    save_model({"model": model, "scaler": scaler}, version)
     metrics = {
         "version": version,
         "model": model.__class__.__name__,
         "rmse": rmse,
+        "precision": precision,
+        "recall": recall,
+        "threshold": threshold,
         "seed": SEED,
         "n_train": int(X_train.shape[0]),
         "n_test": int(X_test.shape[0]),
     }
     save_metrics(metrics)
-    print(f"✅ Training complete | version={version} model={model_name} RMSE={rmse:.4f}")
+    print(f"✅ Training complete | version={version} model={model_name} "
+          f"RMSE={rmse:.4f} Precision={precision:.3f} Recall={recall:.3f}")
 
 
 if __name__ == "__main__":

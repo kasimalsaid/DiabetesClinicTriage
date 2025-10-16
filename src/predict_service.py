@@ -34,16 +34,28 @@ def health():
 
 @app.post("/predict")
 def predict(payload: PatientData):
+    """
+    Predict short-term disease progression.
+    Includes a 'high_risk' flag if predicted score exceeds threshold (default = 140).
+    """
     try:
-        X = np.array([[
-            payload.age, payload.sex, payload.bmi, payload.bp,
-            payload.s1, payload.s2, payload.s3, payload.s4,
-            payload.s5, payload.s6
-        ]])
+        X = np.array([[payload.age, payload.sex, payload.bmi, payload.bp,
+                       payload.s1, payload.s2, payload.s3, payload.s4, payload.s5, payload.s6]])
         Xs = scaler.transform(X)
         yhat = float(model.predict(Xs)[0])
-        return {"prediction": yhat, "model_version": model_version}
+
+        # Define risk threshold (can be tuned)
+        threshold = 140.0
+        high_risk = yhat > threshold
+
+        return {
+            "prediction": yhat,
+            "high_risk": high_risk,
+            "threshold": threshold,
+            "model_version": model_version
+        }
+
     except ValidationError as ve:
-        raise HTTPException(status_code=422, detail=ve.errors())
+        raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
