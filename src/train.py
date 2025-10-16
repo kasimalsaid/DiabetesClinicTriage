@@ -10,6 +10,7 @@ from model_utils import save_model, save_metrics
 
 SEED = 42
 
+
 def train(version: str, model_name: str):
     data = load_diabetes(as_frame=True)
     X, y = data.data, data.target
@@ -44,6 +45,7 @@ def train(version: str, model_name: str):
     }
     save_metrics(metrics)
     print(f"✅ Training complete | version={version} model={model_name} RMSE={rmse:.4f}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

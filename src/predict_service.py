@@ -13,6 +13,7 @@ try:
 except Exception as e:
     raise RuntimeError(f"Failed to load model artifact: {e}")
 
+
 class PatientData(BaseModel):
     age: float
     sex: float
@@ -25,9 +26,11 @@ class PatientData(BaseModel):
     s5: float
     s6: float
 
+
 @app.get("/health")
 def health():
     return {"status": "ok", "model_version": model_version}
+
 
 @app.post("/predict")
 def predict(payload: PatientData):
