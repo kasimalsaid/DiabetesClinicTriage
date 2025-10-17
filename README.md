@@ -19,23 +19,23 @@ Make sure you have:
 ## 🩺 Test the ML API — Diabetes Clinic Triage
 
 ### 🧩 1️⃣ Pull the images
-###Version 1
+Version 0.1
 ```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
 ```
-###Version 2
+Version 0.2
 ```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 ```
 ---
 
 ### 🚀 2️⃣ Run the container
-Example for **v0.2 Ridge Regression**:
+Example for **v0.1 Ridge Regression**:
 ```bash
-docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
 ```
 
-> 💡 Replace `v0.2` with `v0.1` to run the baseline Linear Regression model.
+> 💡 Replace `v0.1` with `v0.2` to run the baseline Ridge Regression model.
 
 ---
 
