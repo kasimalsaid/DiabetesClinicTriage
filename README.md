@@ -46,8 +46,7 @@ curl -Method POST http://localhost:8080/predict `
 curl -X POST http://localhost:8080/predict \
 -H "Content-Type: application/json" \
 -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
----
----
+
 ```
 
 ### 🚀 Version v0.2 — Improved Model with Risk Calibration
@@ -80,9 +79,12 @@ curl -Method POST http://localhost:8080/predict `
 curl -X POST http://localhost:8080/predict \
 -H "Content-Type: application/json" \
 -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
----
 
+---
+```
 ## 🧠 API Overview
+```
+
 
 ### **Endpoints**
 | Method | Endpoint | Description |
@@ -90,7 +92,6 @@ curl -X POST http://localhost:8080/predict \
 | `GET` | `/health` | Returns API status and current model version |
 | `POST` | `/predict` | Accepts diabetes dataset features and returns a progression score (and risk flag in v0.2) |
 
----
 
 ## 🔍 Example JSON Input
 ```json
