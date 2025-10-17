@@ -19,11 +19,14 @@ Make sure you have:
 ## 🩺 Test the ML API — Diabetes Clinic Triage
 
 ### 🧩 1️⃣ Pull the images
+###Version 1
 ```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+```
+###Version 2
+```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 ```
-
 ---
 
 ### 🚀 2️⃣ Run the container
