@@ -34,14 +34,21 @@ docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
 curl http://localhost:8080/health
 ```
 
-**Make a prediction:**
+**Make a prediction (for windows):**
 ```bash
-curl -X POST http://localhost:8080/predict \
-     -H "Content-Type: application/json" \
-     -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+curl -Method POST http://localhost:8080/predict `
+     -H "Content-Type: application/json" `
+     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
 
+**Make a prediction (for MacOS):**
+```bash
+curl -X POST http://localhost:8080/predict \
+-H "Content-Type: application/json" \
+-d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ---
+---
+```
 
 ### 🚀 Version v0.2 — Improved Model with Risk Calibration
 - **Model:** `StandardScaler + Ridge(alpha=1.0)`
@@ -60,13 +67,19 @@ docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 curl http://localhost:8080/health
 ```
 
-**Make a prediction:**
+**Make a prediction (for windows):**
+```bash
+curl -Method POST http://localhost:8080/predict `
+     -H "Content-Type: application/json" `
+     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+
+
+```
+**Make a prediction (for MacOS):**
 ```bash
 curl -X POST http://localhost:8080/predict \
-     -H "Content-Type: application/json" \
-     -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-```
-
+-H "Content-Type: application/json" \
+-d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ---
 
 ## 🧠 API Overview
