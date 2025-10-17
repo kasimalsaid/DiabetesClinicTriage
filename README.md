@@ -11,7 +11,9 @@ The API is built with **FastAPI** and packaged as a **Docker container**, ready 
 Before running, make sure you have:
 - **Docker Desktop** installed and running  
   - [Download for Windows/Mac](https://www.docker.com/products/docker-desktop/)
-- A working **terminal** (Command Prompt, PowerShell, or Terminal on macOS)
+- A working **terminal**:
+  - **Windows:** PowerShell or Command Prompt  
+  - **macOS:** Terminal app
 - Internet access to pull the public image from GitHub Container Registry (GHCR)
 
 ---
@@ -23,7 +25,29 @@ Before running, make sure you have:
 - **Purpose:** Baseline prediction of disease progression  
 - **Features:** Returns continuous risk score only
 
-**Run commands:**
+---
+
+### ▶️ Run Commands (Windows PowerShell)
+```powershell
+docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+```
+
+**Health check:**
+```powershell
+curl http://localhost:8080/health
+```
+
+**Make a prediction:**
+```powershell
+curl -Method POST http://localhost:8080/predict `
+     -H "Content-Type: application/json" `
+     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+```
+
+---
+
+### 🍎 Run Commands (macOS / Linux)
 ```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
 docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
@@ -34,20 +58,12 @@ docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
 curl http://localhost:8080/health
 ```
 
-**Make a prediction (for windows):**
+**Make a prediction:**
 ```bash
-curl -Method POST http://localhost:8080/predict `
-     -H "Content-Type: application/json" `
-     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+curl -X POST http://localhost:8080/predict      -H "Content-Type: application/json"      -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
 
-**Make a prediction (for MacOS):**
-```bash
-curl -X POST http://localhost:8080/predict \
--H "Content-Type: application/json" \
--d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-
-```
+---
 
 ### 🚀 Version v0.2 — Improved Model with Risk Calibration
 - **Model:** `StandardScaler + Ridge(alpha=1.0)`
@@ -55,7 +71,29 @@ curl -X POST http://localhost:8080/predict \
   indicating whether the patient exceeds a defined risk threshold.
 - **Output:** Continuous prediction + `high_risk: true/false`
 
-**Run commands:**
+---
+
+### ▶️ Run Commands (Windows PowerShell)
+```powershell
+docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+```
+
+**Health check:**
+```powershell
+curl http://localhost:8080/health
+```
+
+**Make a prediction:**
+```powershell
+curl -Method POST http://localhost:8080/predict `
+     -H "Content-Type: application/json" `
+     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
+```
+
+---
+
+### 🍎 Run Commands (macOS / Linux)
 ```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
@@ -66,25 +104,14 @@ docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 curl http://localhost:8080/health
 ```
 
-**Make a prediction (for windows):**
+**Make a prediction:**
 ```bash
-curl -Method POST http://localhost:8080/predict `
-     -H "Content-Type: application/json" `
-     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-
-
+curl -X POST http://localhost:8080/predict      -H "Content-Type: application/json"      -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
-**Make a prediction (for MacOS):**
-```bash
-curl -X POST http://localhost:8080/predict \
--H "Content-Type: application/json" \
--d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 
 ---
-```
-## 🧠 API Overview
-```
 
+## 🧠 API Overview
 
 ### **Endpoints**
 | Method | Endpoint | Description |
@@ -92,6 +119,7 @@ curl -X POST http://localhost:8080/predict \
 | `GET` | `/health` | Returns API status and current model version |
 | `POST` | `/predict` | Accepts diabetes dataset features and returns a progression score (and risk flag in v0.2) |
 
+---
 
 ## 🔍 Example JSON Input
 ```json
