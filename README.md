@@ -7,113 +7,98 @@ The API is built with **FastAPI** and packaged as a **Docker container**, ready 
 
 ---
 
-## 🧰 Requirements
-Before running, make sure you have:
+## 🧰 Prerequisites
+Make sure you have:
 - **Docker Desktop** installed and running  
   - [Download for Windows/Mac](https://www.docker.com/products/docker-desktop/)
-- A working **terminal**:
-  - **Windows:** PowerShell or Command Prompt  
-  - **macOS:** Terminal app
-- Internet access to pull the public image from GitHub Container Registry (GHCR)
+- **Internet connection**
+- A **terminal** (PowerShell on Windows or Terminal on macOS/Linux)
 
 ---
 
-## ⚙️ Available Versions
+## 🩺 Test the ML API — Diabetes Clinic Triage
 
-### 🧩 Version v0.1 — Baseline Model
-- **Model:** `StandardScaler + LinearRegression`
-- **Purpose:** Baseline prediction of disease progression  
-- **Features:** Returns continuous risk score only
-
----
-
-### ▶️ Run Commands (Windows PowerShell)
-```powershell
+### 🧩 1️⃣ Pull the images
+```bash
 docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
-docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
+docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
 ```
 
-**Health check:**
+---
+
+### 🚀 2️⃣ Run the container
+Example for **v0.2 Ridge Regression**:
+```bash
+docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
+```
+
+> 💡 Replace `v0.2` with `v0.1` to run the baseline Linear Regression model.
+
+---
+
+### ❤️ 3️⃣ Health check
+
+#### 🪟 **Windows PowerShell / VS Code**
 ```powershell
 curl http://localhost:8080/health
 ```
 
-**Make a prediction:**
-```powershell
-curl -Method POST http://localhost:8080/predict `
-     -H "Content-Type: application/json" `
-     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-```
-
----
-
-### 🍎 Run Commands (macOS / Linux)
-```bash
-docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
-docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.1
-```
-
-**Health check:**
+#### 🍎 **macOS / Linux Terminal**
 ```bash
 curl http://localhost:8080/health
 ```
 
-**Make a prediction:**
+Expected output:
+```json
+{"status":"ok","model_version":"v0.2"}
+```
+
+---
+
+### 🧠 4️⃣ Make a prediction
+
+#### 🪟 **Windows PowerShell / VS Code**
+```powershell
+$headers = @{
+  "Content-Type" = "application/json"
+}
+
+$body = '{
+  "age": 0.02,
+  "sex": -0.044,
+  "bmi": 0.06,
+  "bp": -0.03,
+  "s1": -0.02,
+  "s2": 0.03,
+  "s3": -0.02,
+  "s4": 0.02,
+  "s5": 0.02,
+  "s6": -0.001
+}'
+
+$response = Invoke-WebRequest -Uri "http://localhost:8080/predict" -Method POST -Headers $headers -Body $body
+$response.Content
+```
+
+---
+
+#### 🍎 **macOS / Linux Terminal**
 ```bash
 curl -X POST http://localhost:8080/predict      -H "Content-Type: application/json"      -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 ```
 
 ---
 
-### 🚀 Version v0.2 — Improved Model with Risk Calibration
-- **Model:** `StandardScaler + Ridge(alpha=1.0)`
-- **Improvement:** Adds *calibration of the score* — the API now returns a binary flag (`high_risk`)  
-  indicating whether the patient exceeds a defined risk threshold.
-- **Output:** Continuous prediction + `high_risk: true/false`
-
----
-
-### ▶️ Run Commands (Windows PowerShell)
-```powershell
-docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
-docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
-```
-
-**Health check:**
-```powershell
-curl http://localhost:8080/health
-```
-
-**Make a prediction:**
-```powershell
-curl -Method POST http://localhost:8080/predict `
-     -H "Content-Type: application/json" `
-     -Body '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-```
-
----
-
-### 🍎 Run Commands (macOS / Linux)
-```bash
-docker pull ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
-docker run -p 8080:8080 ghcr.io/kasimalsaid/diabetesclinictriage:v0.2
-```
-
-**Health check:**
-```bash
-curl http://localhost:8080/health
-```
-
-**Make a prediction:**
-```bash
-curl -X POST http://localhost:8080/predict      -H "Content-Type: application/json"      -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-```
+### 🔁 Versions
+| Version | Model Type | Description |
+|----------|-------------|-------------|
+| v0.1 | Linear Regression | Baseline model using StandardScaler + LinearRegression |
+| v0.2 | Ridge Regression | Improved model with Ridge regularization and risk calibration |
 
 ---
 
 ## 🧠 API Overview
 
-### **Endpoints**
 | Method | Endpoint | Description |
 |--------|-----------|--------------|
 | `GET` | `/health` | Returns API status and current model version |
@@ -136,16 +121,6 @@ curl -X POST http://localhost:8080/predict      -H "Content-Type: application/js
   "s6": -0.001
 }
 ```
-
----
-
-## 🧾 Notes
-- The containers automatically start a FastAPI server on **port 8080**.  
-  Make sure this port is available before running.
-- Both versions are published to **GitHub Container Registry (GHCR)**:
-  - `ghcr.io/kasimalsaid/diabetesclinictriage:v0.1`
-  - `ghcr.io/kasimalsaid/diabetesclinictriage:v0.2`
-- The models were trained using the open-source **scikit-learn Diabetes dataset** (`load_diabetes`).
 
 ---
 
@@ -173,7 +148,7 @@ docker container prune
 
 ---
 
-## 👥 Authors
-Developed by **KASIM AL-SAAID - DANIEL HOLM - ISAK HJELM - ELSA STJERNBORG** 
+## 👥 Author
+Developed by **Kasim Al-Said** as part of the *Virtual Diabetes Clinic Triage* project.
 
 ---
