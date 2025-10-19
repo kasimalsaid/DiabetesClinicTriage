@@ -152,6 +152,6 @@ docker container prune
 ---
 
 ## 👥 Author
-Developed by **Kasim Al-Said** as part of the *Virtual Diabetes Clinic Triage* project.
+Developed by **Kasim Al-Said - Daniel Holm - Isak Hjelm - Elsa Stjernborg** 
 
 ---
