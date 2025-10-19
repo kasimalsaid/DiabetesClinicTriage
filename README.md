@@ -152,6 +152,6 @@ docker container prune
 ---
 
 ## 👥 Author
-Developed by **Kasim Al-Said - Daniel Holm - Isak Hjelm - Elsa Stjernborg** 
+Developed by **Kasim Al-Saaid - Daniel Holm - Isak Hjelm - Elsa Stjernborg** 
 
 ---
